@@ -5,7 +5,7 @@ import ContactPage from "./pages/ContactPage/ContactPage";
 import AboutPage from "./pages/aboutpage/AboutPage";
 import Menu from "./pages/Menu/Menu";
 import Cart from "./pages/Cart/Cart";
-import Login from "./components/Login/Login";
+import LoginPage from "./pages/LoginPage/LoginPage";
 import SignUP from "./components/SignUp/SignUP";
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
 import VerifyPaymentPage from "./pages/VerifyPaymentPage/VerifyPaymentPage";
@@ -22,7 +22,7 @@ const App = () => {
 
       <Route path="/menu" element={<Menu />} />
 
-      <Route path="/login" element={<Home />} />
+      <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignUP />} />
       {/* payment verification  */}
       <Route path="/myorder/verify" element={<VerifyPaymentPage />} />

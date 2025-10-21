@@ -62,20 +62,27 @@ const SignUP = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#1a120b] p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#121212] via-[#1A1A1A] to-[#121212] p-4 relative overflow-hidden">
+      {/* Background Glow Effects */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-[#FF4C29]/10 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#FFD369]/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+
       {showToast.visible && <AwesomeToast message={showToast.message} icon={showToast.icon} />}
 
-      <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 space-y-6">
-        <h1 className="text-2xl font-bold text-center text-gray-800">Create Account</h1>
+      <div className="w-full max-w-md backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl shadow-2xl p-8 space-y-6 relative z-10">
+        <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-[#FF4C29] via-[#FF6B35] to-[#FFD369] bg-clip-text text-transparent" style={{ fontFamily: "'Playfair Display', serif" }}>
+          Create Account
+        </h1>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <input
             type="text"
             name="username"
             placeholder="Username"
             value={formData.username}
             onChange={handleChange}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#FFD369]/50 transition-all duration-300"
+            style={{ fontFamily: "'Lato', sans-serif" }}
             required
           />
 
@@ -85,7 +92,8 @@ const SignUP = () => {
             placeholder="Email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#FFD369]/50 transition-all duration-300"
+            style={{ fontFamily: "'Lato', sans-serif" }}
             required
           />
 
@@ -96,28 +104,30 @@ const SignUP = () => {
               placeholder="Password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+              className="w-full px-4 py-3 backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#FFD369]/50 transition-all duration-300 pr-12"
+              style={{ fontFamily: "'Lato', sans-serif" }}
               required
             />
             <button
               type="button"
               onClick={toggleShowPassword}
-              className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500"
+              className="absolute top-1/2 right-4 transform -translate-y-1/2 text-[#FFD369] hover:text-[#FF4C29] transition-colors"
             >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
+              {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
             </button>
           </div>
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-all"
+            className="w-full bg-gradient-to-r from-[#FF4C29] to-[#FFD369] hover:from-[#FF6B35] hover:to-[#FFD369] text-white font-bold py-4 rounded-2xl shadow-lg hover:shadow-[0_8px_32px_rgba(255,76,41,0.4)] transition-all duration-300"
+            style={{ fontFamily: "'Lato', sans-serif" }}
           >
             Sign Up
           </button>
         </form>
 
         <div className="mt-6 text-center">
-          <Link to="/login" className="text-blue-600 hover:underline flex items-center justify-center gap-2">
+          <Link to="/login" className="text-[#FFD369] hover:text-[#FF4C29] transition-colors flex items-center justify-center gap-2 font-semibold" style={{ fontFamily: "'Lato', sans-serif" }}>
             <FaArrowLeft />
             <span>Back to Login</span>
           </Link>

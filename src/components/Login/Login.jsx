@@ -88,81 +88,85 @@ const Login = ({ onLoginSuccess, onClose }) => {
           showToast.visible ? 'translate-y-0 opacity-100' : '-translate-y-20 opacity-0'
         }`}
       >
-        {/* ✅ removed empty toast div content */}
         <div
-          className={`px-4 py-3 rounded-md shadow-lg flex items-center gap-3 text-sm ${
-            showToast.isError ? 'bg-red-600 text-white' : 'bg-green-600 text-white'
+          className={`px-5 py-4 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-semibold backdrop-blur-xl ${
+            showToast.isError ? 'bg-red-600/90 text-white border border-red-400' : 'bg-green-600/90 text-white border border-green-400'
           }`}
+          style={{ fontFamily: "'Lato', sans-serif" }}
         >
-          <FaCheckCircle className='flex-shrink-0' />
+          <FaCheckCircle className='flex-shrink-0 text-lg' />
           <span>{showToast.message}</span>
         </div>
       </div>
 
       {/* Login Form */}
-      <form onSubmit={handleSubmit} className='space-y-6'>
+      <form onSubmit={handleSubmit} className='space-y-5'>
         {/* Email Field */}
         <div className='relative'>
-          <FaUser className={iconClass} />
+          <FaUser className='absolute top-1/2 transform -translate-y-1/2 left-4 text-[#FFD369] pointer-events-none' />
           <input
             type='email'
             name='email'
             placeholder='Email'
             value={formData.email}
             onChange={handleChange}
-            className={`${inputBase} pl-10 pr-4 py-3`}
+            className='w-full px-4 py-3 pl-12 backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#FFD369]/50 transition-all duration-300'
+            style={{ fontFamily: "'Lato', sans-serif" }}
           />
         </div>
 
         {/* Password Field */}
         <div className='relative'>
-          <FaLock className={iconClass} />
+          <FaLock className='absolute top-1/2 transform -translate-y-1/2 left-4 text-[#FFD369] pointer-events-none' />
           <input
             type={showPassword ? 'text' : 'password'}
             name='password'
             placeholder='Password'
             value={formData.password}
             onChange={handleChange}
-            className={`${inputBase} pl-10 pr-10 py-3`}
+            className='w-full px-4 py-3 pl-12 pr-12 backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#FFD369]/50 transition-all duration-300'
+            style={{ fontFamily: "'Lato', sans-serif" }}
           />
           <button
             type='button'
             onClick={toggleShowPassword}
-            className='absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500'
+            className='absolute top-1/2 right-4 transform -translate-y-1/2 text-[#FFD369] hover:text-[#FF4C29] transition-colors'
           >
-            {showPassword ? <FaEyeSlash /> : <FaEye />}
+            {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
           </button>
         </div>
 
         {/* Remember Me */}
         <div className='flex items-center'>
-          <label className='flex items-center'>
+          <label className='flex items-center cursor-pointer'>
             <input
               type='checkbox'
               name='rememberMe'
               checked={formData.rememberMe}
               onChange={handleChange}
-              className='form-checkbox h-5 w-5 text-amber-600 bg-[#2D1B0E] border-amber-400 rounded focus:ring-amber-600'
+              className='form-checkbox h-5 w-5 text-[#FF4C29] bg-white/10 border-[#FFD369] rounded focus:ring-[#FFD369]'
             />
-            <span className='ml-2'>Remember me</span>
+            <span className='ml-3 text-[#F5F5F5]' style={{ fontFamily: "'Lato', sans-serif" }}>Remember me</span>
           </label>
         </div>
 
         {/* Sign In Button */}
         <button
           type='submit'
-          className='w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md flex items-center justify-center gap-2 transition'
+          className='w-full py-4 bg-gradient-to-r from-[#FF4C29] to-[#FFD369] hover:from-[#FF6B35] hover:to-[#FFD369] text-white font-bold rounded-2xl flex items-center justify-center gap-3 shadow-lg hover:shadow-[0_8px_32px_rgba(255,76,41,0.4)] transition-all duration-300'
+          style={{ fontFamily: "'Lato', sans-serif" }}
         >
           Sign In <FaArrowRight />
         </button>
       </form>
 
       {/* Signup Link */}
-      <div className='text-center'>
+      <div className='text-center pt-2'>
         <Link
           to='/signup'
           onClick={onClose}
-          className='text-blue-600 hover:underline flex items-center justify-center gap-2'
+          className='text-[#FFD369] hover:text-[#FF4C29] transition-colors flex items-center justify-center gap-2 font-semibold'
+          style={{ fontFamily: "'Lato', sans-serif" }}
         >
           <FaUserPlus /> Create new Account
         </Link>

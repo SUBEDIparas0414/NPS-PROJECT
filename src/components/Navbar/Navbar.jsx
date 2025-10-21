@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { GiChefToque, GiForkKnifeSpoon } from "react-icons/gi"; // ✅ fixed import (you used GiKnifeFork but used GiForkKnifeSpoon later)
+import { GiChefToque } from "react-icons/gi";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   FiHome,
@@ -12,27 +12,20 @@ import {
   FiPackage,
 } from "react-icons/fi";
 import { useCart } from "../../CartContext/CartContext";
-import Login from "../Login/Login";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { totalItems } = useCart();
-  const [showLoginModal, setShowLoginModal] = useState(false); // ✅ fixed variable name (Model → Modal)
   const [isAuthenticated, setIsAuthenticated] = useState(
     Boolean(localStorage.getItem("authToken") && localStorage.getItem("user"))
   );
 
   useEffect(() => {
-    setShowLoginModal(location.pathname === "/login"); // ✅ consistent variable
     setIsAuthenticated(Boolean(localStorage.getItem("authToken") && localStorage.getItem("user")));
   }, [location.pathname]);
-
-  const handleLoginSuccess = () => {
-    setIsAuthenticated(true);
-    navigate("/");
-  };
 
   const handleLogout = () => {
     localStorage.removeItem("loginData");
@@ -44,44 +37,54 @@ const Navbar = () => {
 
   const renderDesktopAuthButton = () => {
     return isAuthenticated ? (
-      <button
+      <motion.button
+        whileHover={{ scale: 1.05, y: -2 }}
+        whileTap={{ scale: 0.95 }}
         onClick={handleLogout}
-        className="flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-transparent text-amber-100 hover:text-amber-300 hover:border-amber-600 transition"
+        className="flex items-center gap-2 px-5 py-2.5 rounded-2xl backdrop-blur-xl bg-white/5 border border-white/10 hover:border-[#FF4C29]/50 text-[#F5F5F5] hover:text-[#FFD369] transition-all duration-300 shadow-lg hover:shadow-[0_8px_24px_rgba(255,76,41,0.3)]"
+        style={{ fontFamily: "'Inter', sans-serif" }}
       >
         <FiLogOut className="text-lg" />
-        <span>Logout</span>
-      </button>
+        <span className="font-medium">Logout</span>
+      </motion.button>
     ) : (
-      <button
+      <motion.button
+        whileHover={{ scale: 1.05, y: -2 }}
+        whileTap={{ scale: 0.95 }}
         onClick={() => navigate("/login")}
-        className="flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-transparent text-amber-100 hover:text-amber-300 hover:border-amber-600 transition"
+        className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#FF4C29] to-[#FFD369] hover:from-[#FF6B35] hover:to-[#FFD369] text-white transition-all duration-300 shadow-lg hover:shadow-[0_8px_24px_rgba(255,76,41,0.4)]"
+        style={{ fontFamily: "'Inter', sans-serif" }}
       >
         <FiKey className="text-lg" />
-        <span>Login</span>
-      </button>
+        <span className="font-semibold">Login</span>
+      </motion.button>
     );
   };
 
   const renderMobileAuthButton = () => {
     return isAuthenticated ? (
-      <button
+      <motion.button
+        whileTap={{ scale: 0.95 }}
         onClick={handleLogout}
-        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-amber-900/30 text-amber-100 hover:border-amber-600/50 transition"
+        className="w-full flex items-center gap-3 px-5 py-3 rounded-2xl backdrop-blur-xl bg-white/5 border border-white/10 hover:border-[#FF4C29]/50 text-[#F5F5F5] transition-all duration-300"
+        style={{ fontFamily: "'Inter', sans-serif" }}
       >
-        <FiLogOut className="text-lg text-amber-500" />
-        <span>Logout</span>
-      </button>
+        <FiLogOut className="text-lg text-[#FFD369]" />
+        <span className="font-medium">Logout</span>
+      </motion.button>
     ) : (
-      <button
+      <motion.button
+        whileTap={{ scale: 0.95 }}
         onClick={() => {
           navigate("/login");
           setIsOpen(false);
         }}
-        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-amber-900/30 text-amber-100 hover:border-amber-600/50 transition"
+        className="w-full flex items-center gap-3 px-5 py-3 rounded-2xl bg-gradient-to-r from-[#FF4C29] to-[#FFD369] text-white transition-all duration-300 shadow-lg"
+        style={{ fontFamily: "'Inter', sans-serif" }}
       >
-        <FiKey className="text-lg text-amber-500" />
-        <span>Login</span>
-      </button>
+        <FiKey className="text-lg" />
+        <span className="font-semibold">Login</span>
+      </motion.button>
     );
   };
 
@@ -96,156 +99,221 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-[#2D1B0E] border-b-8 border-amber-900/40 shadow-[0_25px_50px_-12px] shadow-amber-900/30 sticky top-0 z-50 font-vibes">
-      <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-full max-w-7xl px-4">
-        <div className="h-[6px] bg-gradient-to-r from-transparent via-amber-600/50 to-transparent shadow-[0_0_20px] shadow-amber-500/30"></div>
-        <div className="flex justify-between px-6">
-          <GiForkKnifeSpoon className="text-amber-500/40 -mt-4 -ml-2 rotate-45" size={32} />
-          <GiForkKnifeSpoon className="text-amber-500/40 -mt-4 -mr-2 -rotate-45" size={32} />
-        </div>
-      </div>
+    <motion.nav 
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="backdrop-blur-xl bg-[#121212]/95 border-b border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)] sticky top-0 z-50"
+    >
+      {/* Premium Top Accent Line */}
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#FF4C29] to-transparent"></div>
 
-      <div className="max-w-7xl mx-auto px-4 relative">
-        <div className="flex justify-between items-center h-16 lg:h-20">
-          {/* Logo Section */}
-          <div className="flex-shrink-0 flex items-center space-x-2 group">
-            <GiChefToque className="text-2xl md:text-3xl lg:text-4xl text-amber-500 transition-all group-hover:rotate-12" />
-            <div className="flex flex-col ml-1 md:ml-2">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div className="flex justify-between items-center h-20">
+          {/* Premium Logo Section */}
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+            className="flex-shrink-0 flex items-center gap-3 group cursor-pointer"
+          >
+            <motion.div
+              whileHover={{ rotate: 12, scale: 1.1 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="w-12 h-12 bg-gradient-to-br from-[#FF4C29] to-[#FFD369] rounded-2xl flex items-center justify-center shadow-lg"
+            >
+              <GiChefToque className="text-2xl text-white" />
+            </motion.div>
+            <div className="flex flex-col">
               <NavLink
                 to="/"
-                className="text-lg md:text-xl lg:text-2xl xl:text-3xl bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent font-monsieur tracking-wider whitespace-nowrap"
+                className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-[#FF4C29] via-[#FF6B35] to-[#FFD369] bg-clip-text text-transparent tracking-tight"
+                style={{ fontFamily: "'Playfair Display', serif" }}
               >
                 Trio Order
               </NavLink>
-              <div className="h-[3px] bg-gradient-to-r from-amber-600/30 via-amber-400/50 to-amber-600/30 w-full mt-1" />
+              <div className="h-[2px] bg-gradient-to-r from-[#FF4C29] via-[#FFD369] to-transparent w-full mt-1 rounded-full"></div>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-2 xl:space-x-4 flex-1 justify-end">
-            {navLinks.map((link) => (
+          {/* Premium Desktop Navigation */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+            className="hidden lg:flex items-center gap-1 flex-1 justify-end"
+          >
+            {navLinks.map((link, index) => (
               <NavLink
                 key={link.name}
                 to={link.to}
                 className={({ isActive }) =>
-                  `px-2 xl:px-4 py-2 flex items-center space-x-2 rounded-3xl border-2 transition-colors text-sm xl:text-base
-                  ${
+                  `group relative px-3 xl:px-4 py-2.5 flex items-center gap-2 rounded-2xl transition-all duration-300 text-sm xl:text-base ${
                     isActive
-                      ? "bg-amber-900/20 border-amber-600/50"
-                      : "border-transparent hover:border-amber-600/50"
+                      ? "backdrop-blur-xl bg-white/10 border border-[#FF4C29]/50 text-[#FFD369] shadow-lg"
+                      : "text-[#B3B3B3] hover:text-[#F5F5F5] hover:bg-white/5"
                   }`
                 }
+                style={{ fontFamily: "'Inter', sans-serif" }}
               >
-                <span className="text-amber-500">{link.icon}</span>
-                <span className="text-amber-100">{link.name}</span>
-              </NavLink>
-            ))}
-            <div className="flex items-center space-x-2 xl:space-x-4 ml-2 xl:ml-4">
-              <NavLink
-                to="/cart"
-                className="p-2 relative text-amber-100 hover:text-amber-300 transition-colors"
-              >
-                <FiShoppingCart className="text-lg xl:text-xl" />
-                {totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-amber-600 text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                    {totalItems}
-                  </span>
+                {({ isActive }) => (
+                  <>
+                    <motion.span 
+                      whileHover={{ scale: 1.2, rotate: 5 }}
+                      className={isActive ? "text-[#FFD369]" : "text-[#FF4C29]"}
+                    >
+                      {link.icon}
+                    </motion.span>
+                    <span className="font-medium">{link.name}</span>
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeTab"
+                        className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#FF4C29] to-[#FFD369] rounded-full"
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      />
+                    )}
+                  </>
                 )}
               </NavLink>
+            ))}
+            
+            <div className="flex items-center gap-2 xl:gap-3 ml-4 xl:ml-6">
+              {/* Premium Cart Button */}
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                <NavLink
+                  to="/cart"
+                  className="relative p-3 backdrop-blur-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#FFD369]/50 rounded-2xl transition-all duration-300 shadow-lg flex items-center justify-center no-underline"
+                  style={{ textDecoration: 'none' }}
+                >
+                  <FiShoppingCart className="text-xl text-[#F5F5F5]" />
+                  {totalItems > 0 && (
+                    <motion.span 
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute -top-2 -right-2 bg-gradient-to-r from-[#FF4C29] to-[#FFD369] text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center shadow-lg"
+                    >
+                      {totalItems}
+                    </motion.span>
+                  )}
+                </NavLink>
+              </motion.div>
               {renderDesktopAuthButton()}
             </div>
-          </div>
+          </motion.div>
 
-          {/* Hamburger Menu Button */}
-          <div className="lg:hidden flex items-center">
-            <button
+          {/* Premium Hamburger Menu Button */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="lg:hidden flex items-center"
+          >
+            <motion.button
+              whileTap={{ scale: 0.95 }}
               onClick={() => setIsOpen(!isOpen)}
-              className="text-amber-500 hover:text-amber-300 p-2 rounded-xl border-2 border-amber-900/30 transition-colors"
+              className="p-3 backdrop-blur-xl bg-white/5 border border-white/10 hover:border-[#FF4C29]/50 rounded-2xl transition-all duration-300 shadow-lg"
             >
-              <div className="space-y-2">
-                <span
-                  className={`block w-6 h-0.5 bg-current transition-transform ${
-                    isOpen ? "rotate-45 translate-y-2" : ""
-                  }`}
+              <div className="space-y-1.5 w-6">
+                <motion.span
+                  animate={isOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="block w-full h-0.5 bg-[#FFD369] rounded-full"
                 />
-                <span
-                  className={`block w-6 h-0.5 bg-current ${
-                    isOpen ? "opacity-0" : ""
-                  }`}
+                <motion.span
+                  animate={isOpen ? { opacity: 0 } : { opacity: 1 }}
+                  transition={{ duration: 0.2 }}
+                  className="block w-full h-0.5 bg-[#FFD369] rounded-full"
                 />
-                <span
-                  className={`block w-6 h-0.5 bg-current transition-transform ${
-                    isOpen ? "-rotate-45 -translate-y-2" : ""
-                  }`}
+                <motion.span
+                  animate={isOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="block w-full h-0.5 bg-[#FFD369] rounded-full"
                 />
               </div>
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
         </div>
       </div>
 
-      {/* Mobile/Tablet Menu */}
-      {isOpen && (
-        <div className="lg:hidden bg-[#2D1B0E] border-t-4 border-amber-900/40">
-          <div className="px-4 py-4 space-y-3">
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.name}
-                to={link.to}
-                onClick={() => setIsOpen(false)}
-                className={({ isActive }) =>
-                  `flex items-center space-x-3 px-4 py-3 rounded-xl ${
-                    isActive
-                      ? "bg-amber-600/30 text-amber-400"
-                      : "text-amber-100 hover:bg-amber-600/20"
-                  }`
-                }
-              >
-                <span className="text-amber-500">{link.icon}</span>
-                <span>{link.name}</span>
-              </NavLink>
-            ))}
-            <div className="pt-4 border-t border-amber-900/40 space-y-3">
-              <NavLink
-                to="/cart"
-                onClick={() => setIsOpen(false)}
-                className="flex items-center justify-center space-x-2 px-4 py-3 text-amber-100 hover:bg-amber-600/20 rounded-xl"
-              >
-                <FiShoppingCart />
-                <span>Cart</span>
-                {totalItems > 0 && (
-                  <span className="bg-amber-600 text-xs px-2 py-1 rounded-full">
-                    {totalItems}
-                  </span>
-                )}
-              </NavLink>
-              {renderMobileAuthButton()}
+      {/* Premium Mobile Menu */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="lg:hidden backdrop-blur-xl bg-[#1A1A1A]/95 border-t border-white/10"
+          >
+            <div className="px-4 py-6 space-y-2">
+              {navLinks.map((link, index) => (
+                <motion.div
+                  key={link.name}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <NavLink
+                    to={link.to}
+                    onClick={() => setIsOpen(false)}
+                    className={({ isActive }) =>
+                      `flex items-center gap-3 px-5 py-3 rounded-2xl transition-all duration-300 ${
+                        isActive
+                          ? "backdrop-blur-xl bg-white/10 border border-[#FF4C29]/50 text-[#FFD369]"
+                          : "text-[#B3B3B3] hover:text-[#F5F5F5] hover:bg-white/5"
+                      }`
+                    }
+                    style={{ fontFamily: "'Inter', sans-serif" }}
+                  >
+                    {({ isActive }) => (
+                      <>
+                        <span className={isActive ? "text-[#FFD369]" : "text-[#FF4C29]"}>
+                          {link.icon}
+                        </span>
+                        <span className="font-medium">{link.name}</span>
+                      </>
+                    )}
+                  </NavLink>
+                </motion.div>
+              ))}
+              
+              <div className="pt-4 mt-4 border-t border-white/10 space-y-3">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: navLinks.length * 0.1 }}
+                >
+                  <NavLink
+                    to="/cart"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-between px-5 py-3 backdrop-blur-xl bg-white/5 border border-white/10 hover:border-[#FFD369]/50 text-[#F5F5F5] rounded-2xl transition-all duration-300"
+                    style={{ fontFamily: "'Inter', sans-serif" }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <FiShoppingCart className="text-[#FF4C29]" />
+                      <span className="font-medium">Cart</span>
+                    </div>
+                    {totalItems > 0 && (
+                      <span className="bg-gradient-to-r from-[#FF4C29] to-[#FFD369] text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                        {totalItems}
+                      </span>
+                    )}
+                  </NavLink>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: (navLinks.length + 1) * 0.1 }}
+                >
+                  {renderMobileAuthButton()}
+                </motion.div>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Login Modal */}
-      {showLoginModal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-          <div className="bg-gradient-to-br from-[#2D1B0E] to-[#4a372a] rounded-xl p-8 w-full max-w-md relative border-4 border-amber-700/30">
-            <button
-              onClick={() => navigate("/")}
-              className="absolute top-4 right-4 text-amber-500 hover:text-amber-300 text-2xl"
-            >
-              &times;
-            </button>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent mb-6 text-center">
-              TrioOrder
-            </h2>
-            <Login
-              onLoginSuccess={handleLoginSuccess}
-              onClose={() => navigate("/")}
-            />
-          </div>
-        </div>
-      )}
-    </nav>
+    </motion.nav>
   );
 };
 
