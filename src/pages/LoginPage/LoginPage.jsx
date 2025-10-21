@@ -71,7 +71,9 @@ const LoginPage = () => {
         // Store user information properly
         const userInfo = {
           email: formData.email,
-          token: res.data.token
+          token: res.data.token,
+          username: res.data.user.username,
+          profilePhoto: res.data.user.profilePhoto
         };
         localStorage.setItem('user', JSON.stringify(userInfo));
 

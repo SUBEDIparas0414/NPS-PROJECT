@@ -13,6 +13,8 @@ import {
 } from "react-icons/fi";
 import { useCart } from "../../CartContext/CartContext";
 import { motion, AnimatePresence } from "framer-motion";
+import NotificationBar from "../NotificationBar/NotificationBar";
+import UserProfileDropdown from "../UserProfileDropdown/UserProfileDropdown";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -46,16 +48,7 @@ const Navbar = () => {
 
   const renderDesktopAuthButton = () => {
     return isAuthenticated ? (
-      <motion.button
-        whileHover={{ scale: 1.05, y: -2 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={handleLogout}
-        className="flex items-center gap-2 px-5 py-2.5 rounded-2xl backdrop-blur-xl bg-white/5 border border-white/10 hover:border-[#FF4C29]/50 text-[#F5F5F5] hover:text-[#FFD369] transition-all duration-300 shadow-lg hover:shadow-[0_8px_24px_rgba(255,76,41,0.3)]"
-        style={{ fontFamily: "'Inter', sans-serif" }}
-      >
-        <FiLogOut className="text-lg" />
-        <span className="font-medium">Logout</span>
-      </motion.button>
+      <UserProfileDropdown />
     ) : (
       <motion.button
         whileHover={{ scale: 1.05, y: -2 }}
@@ -72,15 +65,7 @@ const Navbar = () => {
 
   const renderMobileAuthButton = () => {
     return isAuthenticated ? (
-      <motion.button
-        whileTap={{ scale: 0.95 }}
-        onClick={handleLogout}
-        className="w-full flex items-center gap-3 px-5 py-3 rounded-2xl backdrop-blur-xl bg-white/5 border border-white/10 hover:border-[#FF4C29]/50 text-[#F5F5F5] transition-all duration-300"
-        style={{ fontFamily: "'Inter', sans-serif" }}
-      >
-        <FiLogOut className="text-lg text-[#FFD369]" />
-        <span className="font-medium">Logout</span>
-      </motion.button>
+      <UserProfileDropdown />
     ) : (
       <motion.button
         whileTap={{ scale: 0.95 }}
@@ -208,6 +193,18 @@ const Navbar = () => {
                   )}
                 </NavLink>
               </motion.div>
+              
+              {/* Notification Bar - Only show for authenticated users */}
+              {isAuthenticated && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <NotificationBar />
+                </motion.div>
+              )}
+              
               {renderDesktopAuthButton()}
             </div>
           </motion.div>
@@ -289,6 +286,18 @@ const Navbar = () => {
               ))}
               
               <div className="pt-4 mt-4 border-t border-white/10 space-y-3">
+                {/* Notification Bar for Mobile - Only show for authenticated users */}
+                {isAuthenticated && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: navLinks.length * 0.1 }}
+                    className="px-5 py-3"
+                  >
+                    <NotificationBar />
+                  </motion.div>
+                )}
+                
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}

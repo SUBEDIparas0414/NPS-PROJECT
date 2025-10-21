@@ -6,10 +6,12 @@ import { motion } from "framer-motion";
 
 const categories = ["Breakfast", "Lunch", "Dinner", "Mexican", "Italian", "Drinks"];
 
-const OurMenu = () => {
+const OurMenu = ({ searchQuery = '' }) => {
   const [activeCategory, setActiveCategory] = useState(categories[0]);
   const { cartItems, addToCart, removeFromCart, updateQuantity, API_BASE } = useCart();
   const [menuData, setMenuData] = useState({});
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   const buildImageUrl = (path) => {
     if (!path) return "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiMyYTJhMmEiLz48cmVjdCB4PSIyMCIgeT0iMjAiIHdpZHRoPSIxNjAiIGhlaWdodD0iMTYwIiBmaWxsPSIjM2EzYTNhIiBzdHJva2U9IiM2NjYiIHN0cm9rZS13aWR0aD0iMiIgcng9IjgiLz48Y2lyY2xlIGN4PSIxMDAiIGN5PSI4MCIgcj0iMjAiIGZpbGw9IiM2NjYiLz48cGF0aCBkPSJNNjAgMTQwIEwxMDAgMTAwIEwxNDAgMTQwIiBzdHJva2U9IiM2NjYiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHRleHQgeD0iMTAwIiB5PSIxNzAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM5OTkiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMiI+Tm8gSW1hZ2U8L3RleHQ+PC9zdmc+";
@@ -34,8 +36,25 @@ const OurMenu = () => {
     fetchMenu();
   }, [API_BASE]);
 
+  // Handle search functionality
+  useEffect(() => {
+    if (searchQuery && searchQuery.trim()) {
+      setIsSearching(true);
+      const allItems = Object.values(menuData).flat();
+      const filtered = allItems.filter(item => 
+        item.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.category?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setSearchResults(filtered);
+    } else {
+      setIsSearching(false);
+      setSearchResults([]);
+    }
+  }, [searchQuery, menuData]);
+
   const getCartEntry = (itemId) => cartItems.find((ci) => ci.item?._id === itemId);
-  const displayItems = (menuData[activeCategory] ?? []).slice(0, 12);
+  const displayItems = isSearching ? searchResults : (menuData[activeCategory] ?? []).slice(0, 12);
 
   return (
     <div className="relative bg-gradient-to-b from-[#121212] via-[#1A1A1A] to-[#121212] text-white px-4 py-20 overflow-hidden">
@@ -52,39 +71,43 @@ const OurMenu = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-[#FF4C29] via-[#FF6B35] to-[#FFD369] bg-clip-text text-transparent" style={{ fontFamily: "'Playfair Display', serif" }}>
-            Our Complete Menu
+            {isSearching ? `Search Results for "${searchQuery}"` : "Our Complete Menu"}
           </h2>
-          <p className="text-[#B3B3B3] text-lg sm:text-xl" style={{ fontFamily: "'Lato', sans-serif" }}>Discover All Our Delicious Offerings</p>
+          <p className="text-[#B3B3B3] text-lg sm:text-xl" style={{ fontFamily: "'Lato', sans-serif" }}>
+            {isSearching ? `Found ${searchResults.length} items matching your search` : "Discover All Our Delicious Offerings"}
+          </p>
         </motion.div>
 
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          viewport={{ once: true }}
-          className="flex flex-wrap justify-center gap-3 mb-12"
-        >
-          {categories.map((cat, index) => (
-            <motion.button
-              key={cat}
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3 + index * 0.1 }}
-              viewport={{ once: true }}
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setActiveCategory(cat)}
-              className={`px-6 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 ${
-                activeCategory === cat 
-                  ? "bg-gradient-to-r from-[#FF4C29] to-[#FFD369] text-white shadow-lg shadow-[#FF4C29]/30" 
-                  : "backdrop-blur-xl bg-white/5 border border-white/10 text-[#B3B3B3] hover:text-[#F5F5F5] hover:border-[#FFD369]/50"
-              }`}
-              style={{ fontFamily: "'Lato', sans-serif" }}
-            >
-              {cat}
-            </motion.button>
-          ))}
-        </motion.div>
+        {!isSearching && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            viewport={{ once: true }}
+            className="flex flex-wrap justify-center gap-3 mb-12"
+          >
+            {categories.map((cat, index) => (
+              <motion.button
+                key={cat}
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 + index * 0.1 }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setActiveCategory(cat)}
+                className={`px-6 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 ${
+                  activeCategory === cat 
+                    ? "bg-gradient-to-r from-[#FF4C29] to-[#FFD369] text-white shadow-lg shadow-[#FF4C29]/30" 
+                    : "backdrop-blur-xl bg-white/5 border border-white/10 text-[#B3B3B3] hover:text-[#F5F5F5] hover:border-[#FFD369]/50"
+                }`}
+                style={{ fontFamily: "'Lato', sans-serif" }}
+              >
+                {cat}
+              </motion.button>
+            ))}
+          </motion.div>
+        )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {displayItems.map((item, index) => {

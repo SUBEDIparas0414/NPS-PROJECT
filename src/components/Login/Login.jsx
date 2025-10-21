@@ -44,7 +44,9 @@ const Login = ({ onLoginSuccess, onClose }) => {
         // Store user information properly
         const userInfo = {
           email: formData.email,
-          token: res.data.token
+          token: res.data.token,
+          username: res.data.user.username,
+          profilePhoto: res.data.user.profilePhoto
         };
         localStorage.setItem('user', JSON.stringify(userInfo));
 
@@ -64,6 +66,9 @@ const Login = ({ onLoginSuccess, onClose }) => {
         setTimeout(() => {
           navigate('/verify-email', { state: { email: res.data.email || formData.email } });
         }, 2000);
+      } else if (!res.data.success && res.data.accountDeactivated) {
+        // User account is deactivated
+        setShowToast({ visible: true, message: res.data.message, isError: true });
       } else {
         console.warn('unexpected error:', res.data);
         throw new Error(res.data.message || 'login Failed');
@@ -79,6 +84,12 @@ const Login = ({ onLoginSuccess, onClose }) => {
           setTimeout(() => {
             navigate('/verify-email', { state: { email: err.response.data.email || formData.email } });
           }, 2000);
+          return;
+        }
+        
+        // Handle deactivated account case
+        if (err.response.data?.accountDeactivated) {
+          setShowToast({ visible: true, message: err.response.data.message, isError: true });
           return;
         }
       }

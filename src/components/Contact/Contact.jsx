@@ -3,24 +3,65 @@ import toast, { Toaster } from 'react-hot-toast'
 import { FiArrowRight, FiGlobe, FiMail, FiMapPin, FiMessageSquare, FiPhone } from 'react-icons/fi';
 import { contactFormFields } from '../../assets/dummydata';
 import { motion } from 'framer-motion';
+import axios from 'axios';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: '', phone: '', email: '', address: '', dish: '', query: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form Submitted', formData);
-    toast.success('Your query has been submitted successfully!', {
-      style: { 
-        background: 'linear-gradient(135deg, #FF4C29 0%, #FFD369 100%)', 
-        color: '#fff',
-        fontFamily: "'Lato', sans-serif",
-        fontWeight: '600'
-      },
-    });
-    setFormData({ name: '', phone: '', email: '', address: '', dish: '', query: '' });
+    setIsSubmitting(true);
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await axios.post('http://localhost:4000/api/contact/submit', {
+        fullName: formData.name,
+        phoneNumber: formData.phone,
+        email: formData.email,
+        address: formData.address,
+        dishName: formData.dish,
+        query: formData.query
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (response.data.success) {
+        toast.success(response.data.message, {
+          style: { 
+            background: 'linear-gradient(135deg, #FF4C29 0%, #FFD369 100%)', 
+            color: '#fff',
+            fontFamily: "'Lato', sans-serif",
+            fontWeight: '600'
+          },
+        });
+        setFormData({ name: '', phone: '', email: '', address: '', dish: '', query: '' });
+      } else {
+        toast.error(response.data.message || 'Failed to submit query', {
+          style: { 
+            background: '#dc2626', 
+            color: '#fff',
+            fontFamily: "'Lato', sans-serif",
+            fontWeight: '600'
+          },
+        });
+      }
+    } catch (error) {
+      console.error('Contact form error:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to submit query. Please try again.';
+      toast.error(errorMessage, {
+        style: { 
+          background: '#dc2626', 
+          color: '#fff',
+          fontFamily: "'Lato', sans-serif",
+          fontWeight: '600'
+        },
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -136,9 +177,9 @@ const Contact = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 + index * 0.1, duration: 0.6 }}
               >
-                <label className="block mb-2 text-sm font-semibold text-[#F5F5F5]" style={{ fontFamily: "'Lato', sans-serif" }}>{label}</label>
-                <div className="flex items-center backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl px-4 focus-within:border-[#FFD369]/50 transition-all duration-300">
-                  <Icon className="text-[#FFD369] mr-3 text-lg" />
+                <label className="block mb-2 text-sm font-semibold text-white" style={{ fontFamily: "'Lato', sans-serif" }}>{label}</label>
+                <div className="flex items-center bg-gray-800/50 border border-gray-600/50 rounded-xl px-4 focus-within:border-[#FFD369] focus-within:bg-gray-700/50 hover:border-gray-500 transition-all duration-300 shadow-sm">
+                  <Icon className="text-[#FFD369] mr-3 text-lg flex-shrink-0" />
                   <input
                     type={type}
                     name={name}
@@ -147,7 +188,7 @@ const Contact = () => {
                     placeholder={placeholder}
                     pattern={pattern}
                     required
-                    className="w-full bg-transparent outline-none py-3 text-white placeholder-[#B3B3B3]"
+                    className="w-full bg-transparent outline-none py-3 text-white placeholder-gray-400 focus:placeholder-gray-300 transition-colors"
                     style={{ fontFamily: "'Lato', sans-serif" }}
                   />
                 </div>
@@ -159,9 +200,9 @@ const Contact = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8, duration: 0.6 }}
             >
-              <label className="block mb-2 text-sm font-semibold text-[#F5F5F5]" style={{ fontFamily: "'Lato', sans-serif" }}>Your Query</label>
-              <div className="flex items-start backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl px-4 py-3 focus-within:border-[#FFD369]/50 transition-all duration-300">
-                <FiMessageSquare className="text-[#FFD369] mt-1 mr-3 text-lg" />
+              <label className="block mb-2 text-sm font-semibold text-white" style={{ fontFamily: "'Lato', sans-serif" }}>Your Query</label>
+              <div className="flex items-start bg-gray-800/50 border border-gray-600/50 rounded-xl px-4 py-3 focus-within:border-[#FFD369] focus-within:bg-gray-700/50 hover:border-gray-500 transition-all duration-300 shadow-sm">
+                <FiMessageSquare className="text-[#FFD369] mt-1 mr-3 text-lg flex-shrink-0" />
                 <textarea
                   rows="5"
                   name="query"
@@ -169,21 +210,35 @@ const Contact = () => {
                   onChange={handleChange}
                   placeholder="Type your message here..."
                   required
-                  className="w-full bg-transparent outline-none text-white placeholder-[#B3B3B3] resize-none"
+                  className="w-full bg-transparent outline-none text-white placeholder-gray-400 focus:placeholder-gray-300 resize-none transition-colors"
                   style={{ fontFamily: "'Lato', sans-serif" }}
                 ></textarea>
               </div>
             </motion.div>
 
             <motion.button
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: isSubmitting ? 1 : 1.02, y: isSubmitting ? 0 : -2 }}
+              whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
               type="submit"
-              className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-[#FF4C29] to-[#FFD369] hover:from-[#FF6B35] hover:to-[#FFD369] text-white font-bold py-4 rounded-2xl shadow-lg hover:shadow-[0_8px_32px_rgba(255,76,41,0.4)] transition-all duration-300"
+              disabled={isSubmitting}
+              className={`w-full flex items-center justify-center gap-3 font-bold py-4 rounded-2xl shadow-lg transition-all duration-300 ${
+                isSubmitting 
+                  ? 'bg-gray-500 text-gray-300 cursor-not-allowed' 
+                  : 'bg-gradient-to-r from-[#FF4C29] to-[#FFD369] hover:from-[#FF6B35] hover:to-[#FFD369] text-white hover:shadow-[0_8px_32px_rgba(255,76,41,0.4)]'
+              }`}
               style={{ fontFamily: "'Lato', sans-serif" }}
             >
-              <span>Submit Query</span>
-              <FiArrowRight className="text-xl" />
+              {isSubmitting ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-300 border-t-transparent"></div>
+                  <span>Submitting...</span>
+                </>
+              ) : (
+                <>
+                  <span>Submit Query</span>
+                  <FiArrowRight className="text-xl" />
+                </>
+              )}
             </motion.button>
           </form>
         </motion.div>

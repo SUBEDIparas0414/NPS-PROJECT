@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
-import { features, stats, teamMembers } from "../../assets/dummydata";
+import { features, teamMembers } from "../../assets/dummydata";
 import { FaXTwitter } from "react-icons/fa6";
 import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
 
 const About = () => {
-  const [hoveredStat, setHoveredStat] = useState(null);
 
   return (
     <div className="bg-[rgb(31,18,10)] text-gray-200">
@@ -55,54 +54,6 @@ const About = () => {
                   <h3 className="text-xl font-semibold">{f.title}</h3>
                 </div>
                 <p className="text-gray-400">{f.text}</p>
-              </motion.div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-16 px-6 bg-gray-800/30">
-        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          {stats.map((s, i) => {
-            const Icon = s.icon;
-            return (
-              <motion.div
-                key={s.label}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.2, type: "spring" }}
-                className="p-6 rounded-xl bg-gray-900/40 hover:bg-gray-900/70 transition relative"
-                onHoverStart={() => setHoveredStat(i)}
-                onHoverEnd={() => setHoveredStat(null)}
-                animate={{
-                  scale: hoveredStat === i ? 1.05 : 1,
-                  zIndex: hoveredStat === i ? 10 : 1,
-                }}
-              >
-                <motion.div
-                  animate={{
-                    y: [0, -10, 0],
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: i * 0.3,
-                  }}
-                >
-                  <motion.div whileHover={{ scale: 1.1, rotate: 10 }}>
-                    <Icon className="text-3xl text-yellow-400 mx-auto mb-3" />
-                  </motion.div>
-                  <div className="text-3xl font-bold text-white">{s.number}</div>
-                  <motion.div
-                    className="mt-2 text-sm uppercase tracking-wide text-gray-300"
-                    animate={{
-                      letterSpacing: hoveredStat === i ? "0.15em" : "0.05em",
-                    }}
-                  >
-                    {s.label}
-                  </motion.div>
-                </motion.div>
               </motion.div>
             );
           })}

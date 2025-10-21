@@ -52,33 +52,6 @@ export const features = [
     },
 ];
 
-export const stats = [
-    {
-        number: '10M+',
-        label: 'Deliveries',
-        icon: GiFoodTruck,
-        gradient: 'from-amber-500 via-orange-400 to-yellow-600',
-    },
-    {
-        number: '98%',
-        label: 'Satisfaction',
-        icon: FaHeart,
-        gradient: 'from-rose-500 via-amber-500 to-yellow-500',
-    },
-    {
-        number: '500+',
-        label: 'Cities',
-        icon: FaLeaf,
-        gradient: 'from-emerald-500 via-amber-500 to-yellow-600',
-    },
-    {
-        number: '24/7',
-        label: 'Support',
-        icon: FaRegClock,
-        gradient: 'from-amber-500 via-orange-400 to-rose-500',
-    },
-];
-
 export const teamMembers = [
     {
         name: "Nilesh Karn",
