@@ -3,12 +3,26 @@ import { useCart } from "../../CartContext/CartContext";
 import { Link } from "react-router-dom";
 import { FaMinus, FaPlus, FaTimes, FaTrash, FaShoppingBag, FaArrowRight } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import Recommendations from "../Recommendations/Recommendations";
 
 const CartPage = () => {
   const { cartItems, removeFromCart, updateQuantity, totalAmount, API_BASE } =
     useCart();
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageErrors, setImageErrors] = useState(new Set());
+
+  // Debug: Log cart items to see structure
+  console.log('CartPage cartItems:', cartItems);
+  cartItems.forEach((ci, idx) => {
+    console.log(`Cart item ${idx}:`, {
+      _id: ci._id,
+      hasItem: !!ci.item,
+      itemId: ci.item?._id,
+      itemName: ci.item?.name,
+      itemPrice: ci.item?.price,
+      quantity: ci.quantity
+    });
+  });
 
   const buildImageUrl = (path) => {
     if (!path) return "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiMyYTJhMmEiLz48cmVjdCB4PSIyMCIgeT0iMjAiIHdpZHRoPSIxNjAiIGhlaWdodD0iMTYwIiBmaWxsPSIjM2EzYTNhIiBzdHJva2U9IiM2NjYiIHN0cm9rZS13aWR0aD0iMiIgcng9IjgiLz48Y2lyY2xlIGN4PSIxMDAiIGN5PSI4MCIgcj0iMjAiIGZpbGw9IiM2NjYiLz48cGF0aCBkPSJNNjAgMTQwIEwxMDAgMTAwIEwxNDAgMTQwIiBzdHJva2U9IiM2NjYiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHRleHQgeD0iMTAwIiB5PSIxNzAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM5OTkiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMiI+Tm8gSW1hZ2U8L3RleHQ+PC9zdmc+";
@@ -160,6 +174,9 @@ const CartPage = () => {
               ))}
             </AnimatePresence>
           </div>
+
+          {/* Recommendations Section */}
+          <Recommendations cartItems={cartItems} />
 
           {/* Cart Summary */}
           <motion.div 

@@ -125,12 +125,23 @@ export const CartProvider = ({ children }) => {
   const addToCart = useCallback(async (item, qty = 1) => {
     const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
 
+    // Handle if item is just an ID string
+    const itemObj = typeof item === 'string' ? { _id: item } : item;
+    const itemId = itemObj?._id;
+
+    if (!itemId) {
+      console.error('addToCart: invalid item', item);
+      return;
+    }
+
+    console.log('addToCart called with:', { item: itemObj, qty, itemId });
+
     // optimistic: update immediately using local item info
     // server should return the authoritative state; we reconcile if an array is returned
     try {
       const res = await axios.post(
         `${API_BASE}/api/cart`,
-        { itemId: item._id, quantity: qty },
+        { itemId, quantity: qty },
         {
           withCredentials: true,
           headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -138,22 +149,35 @@ export const CartProvider = ({ children }) => {
       );
 
       const data = res?.data;
+      console.log('addToCart response:', data);
+      
       const hydrated = normalizeCartPayload(data);
+      console.log('Hydrated payload:', hydrated);
+      
       if (hydrated.length > 1) {
         dispatch({ type: "HYDRATE_CART", payload: data });
       } else if (hydrated.length === 1) {
         // use server line id if provided, but ensure we keep the item details we already have
         const serverLine = hydrated[0];
+        console.log('Server line:', serverLine);
+        console.log('Using item:', serverLine.item || itemObj);
+        
         dispatch({
           type: "ADD_ITEM",
-          payload: { _id: serverLine._id, item: item || serverLine.item, quantity: qty },
+          payload: { 
+            _id: serverLine._id, 
+            item: serverLine.item || itemObj, 
+            quantity: serverLine.quantity || qty 
+          },
         });
       } else {
         // fallback: no structured response; still update locally
-        dispatch({ type: "ADD_ITEM", payload: { item, quantity: qty } });
+        console.log('Fallback: using itemObj', itemObj);
+        dispatch({ type: "ADD_ITEM", payload: { item: itemObj, quantity: qty } });
       }
     } catch (err) {
       console.error("addToCart failed", err);
+      console.error("Error details:", err.response?.data || err.message);
       // if needed, show toast here
     }
   }, []);
