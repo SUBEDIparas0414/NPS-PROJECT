@@ -40,7 +40,21 @@ const SignUP = () => {
       const res = await axios.post(`${url}/api/user/register`, formData);
       console.log('Register Response', res.data);
 
+      if (res.data.success && res.data.needsVerification) {
+        // Redirect to email verification page
+        setShowToast({
+          visible: true,
+          message: res.data.message || 'Check your email for verification PIN',
+          icon: <FaCheckCircle />
+        });
+        setTimeout(() => {
+          navigate('/verify-email', { state: { email: res.data.email } });
+        }, 2000);
+        return;
+      }
+
       if (res.data.success && res.data.token) {
+        // Auto login after verification (shouldn't happen but kept for backward compatibility)
         localStorage.setItem('authToken', res.data.token);
         setShowToast({
           visible: true,
@@ -49,6 +63,20 @@ const SignUP = () => {
         });
         return;
       }
+
+      // Handle specific cases
+      if (!res.data.success && res.data.needsVerification) {
+        setShowToast({
+          visible: true,
+          message: res.data.message,
+          icon: <FaCheckCircle />
+        });
+        setTimeout(() => {
+          navigate('/verify-email', { state: { email: res.data.email } });
+        }, 2000);
+        return;
+      }
+
       throw new Error(res.data.message || 'Registration failed');
     } catch (err) {
       console.error('registration error', err);

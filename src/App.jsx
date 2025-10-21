@@ -7,6 +7,8 @@ import Menu from "./pages/Menu/Menu";
 import Cart from "./pages/Cart/Cart";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import SignUP from "./components/SignUp/SignUP";
+import VerifyEmail from "./components/VerifyEmail/VerifyEmail";
+import ForgotPassword from "./components/ForgotPassword/ForgotPassword";
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
 import VerifyPaymentPage from "./pages/VerifyPaymentPage/VerifyPaymentPage";
 import CheckoutPage from "./pages/CheckoutPage/CheckoutPage";
@@ -22,8 +24,12 @@ const App = () => {
 
       <Route path="/menu" element={<Menu />} />
 
+      {/* Authentication Routes */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignUP />} />
+      <Route path="/verify-email" element={<VerifyEmail />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      
       {/* payment verification  */}
       <Route path="/myorder/verify" element={<VerifyPaymentPage />} />
       <Route

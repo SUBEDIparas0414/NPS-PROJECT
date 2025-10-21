@@ -9,7 +9,7 @@ import {
   FaUserPlus
 } from 'react-icons/fa';
 import { iconClass, inputBase } from '../../assets/dummydata';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const url = 'http://localhost:4000';
@@ -18,10 +18,11 @@ const Login = ({ onLoginSuccess, onClose }) => {
   const [showToast, setShowToast] = useState({ visible: false, message: '', isError: false });
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    email: '',        // ✅ fixed: should be email instead of username
+    email: '',
     password: '',
     rememberMe: false
   });
+  const navigate = useNavigate();
 
   useEffect(() => {
     const stored = localStorage.getItem('loginData');
@@ -57,6 +58,12 @@ const Login = ({ onLoginSuccess, onClose }) => {
           setShowToast({ visible: false, message: '', isError: false });
           onLoginSuccess(res.data.token);
         }, 1500);
+      } else if (!res.data.success && res.data.needsVerification) {
+        // User needs to verify email first
+        setShowToast({ visible: true, message: res.data.message, isError: true });
+        setTimeout(() => {
+          navigate('/verify-email', { state: { email: res.data.email || formData.email } });
+        }, 2000);
       } else {
         console.warn('unexpected error:', res.data);
         throw new Error(res.data.message || 'login Failed');
@@ -64,8 +71,16 @@ const Login = ({ onLoginSuccess, onClose }) => {
     } catch (err) {
       console.error('Axios error:', err);
       if (err.response) {
-        // ✅ fixed typo: was 'respose' and string concat wrong
         console.error('Server res:', err.response.status, err.response.data);
+        
+        // Handle verification needed case
+        if (err.response.data?.needsVerification) {
+          setShowToast({ visible: true, message: err.response.data.message, isError: true });
+          setTimeout(() => {
+            navigate('/verify-email', { state: { email: err.response.data.email || formData.email } });
+          }, 2000);
+          return;
+        }
       }
       const msg = err.response?.data?.message || err.message || 'Login failed';
       setShowToast({ visible: true, message: msg, isError: true });
@@ -136,8 +151,8 @@ const Login = ({ onLoginSuccess, onClose }) => {
           </button>
         </div>
 
-        {/* Remember Me */}
-        <div className='flex items-center'>
+        {/* Remember Me & Forgot Password */}
+        <div className='flex items-center justify-between'>
           <label className='flex items-center cursor-pointer'>
             <input
               type='checkbox'
@@ -148,6 +163,13 @@ const Login = ({ onLoginSuccess, onClose }) => {
             />
             <span className='ml-3 text-[#F5F5F5]' style={{ fontFamily: "'Lato', sans-serif" }}>Remember me</span>
           </label>
+          <Link
+            to='/forgot-password'
+            className='text-[#FFD369] hover:text-[#FF4C29] text-sm transition-colors'
+            style={{ fontFamily: "'Lato', sans-serif" }}
+          >
+            Forgot Password?
+          </Link>
         </div>
 
         {/* Sign In Button */}

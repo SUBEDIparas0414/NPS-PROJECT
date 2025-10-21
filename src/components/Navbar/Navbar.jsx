@@ -35,6 +35,15 @@ const Navbar = () => {
     navigate("/");
   };
 
+  const handleLogoClick = () => {
+    // Navigate to home page
+    navigate("/");
+    // Scroll to top smoothly
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    // Close mobile menu if open
+    setIsOpen(false);
+  };
+
   const renderDesktopAuthButton = () => {
     return isAuthenticated ? (
       <motion.button
@@ -116,6 +125,9 @@ const Navbar = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
             className="flex-shrink-0 flex items-center gap-3 group cursor-pointer"
+            onClick={handleLogoClick}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
             <motion.div
               whileHover={{ rotate: 12, scale: 1.1 }}
@@ -125,13 +137,12 @@ const Navbar = () => {
               <GiChefToque className="text-2xl text-white" />
             </motion.div>
             <div className="flex flex-col">
-              <NavLink
-                to="/"
+              <span
                 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-[#FF4C29] via-[#FF6B35] to-[#FFD369] bg-clip-text text-transparent tracking-tight"
                 style={{ fontFamily: "'Playfair Display', serif" }}
               >
                 Trio Order
-              </NavLink>
+              </span>
               <div className="h-[2px] bg-gradient-to-r from-[#FF4C29] via-[#FFD369] to-transparent w-full mt-1 rounded-full"></div>
             </div>
           </motion.div>
