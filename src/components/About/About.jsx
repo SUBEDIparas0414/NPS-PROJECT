@@ -13,15 +13,91 @@ const About = () => {
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="text-center py-16 px-6"
+        className="relative text-center py-20 px-6 overflow-hidden"
       >
-        <div className="max-w-3xl mx-auto">
-          <motion.h1 className="text-4xl md:text-5xl font-extrabold text-yellow-500 mb-4">
-            Culinary Express
+        {/* Animated Background Elements */}
+        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-0 w-80 h-80 bg-gradient-to-l from-red-500/10 to-yellow-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        
+        <div className="relative z-10 max-w-4xl mx-auto">
+          <motion.h1 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+            className="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            <span className="block bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(255,193,7,0.3)]">
+              Culinary Express
+            </span>
           </motion.h1>
-          <motion.p className="text-lg text-gray-300 leading-relaxed">
-            Crafting unforgettable dining experiences, delivered to your doorstep
-          </motion.p>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="space-y-4"
+          >
+            <motion.h2 
+              className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2"
+              style={{ fontFamily: "'Lato', sans-serif" }}
+            >
+              Satisfying Cravings, Speeding Happiness.
+            </motion.h2>
+            
+            <motion.div 
+              className="flex flex-wrap justify-center gap-4 text-xl md:text-2xl font-semibold"
+              style={{ fontFamily: "'Lato', sans-serif" }}
+            >
+              <motion.span 
+                className="bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent"
+                whileHover={{ scale: 1.1 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                Fast.
+              </motion.span>
+              <motion.span 
+                className="bg-gradient-to-r from-blue-400 to-cyan-500 bg-clip-text text-transparent"
+                whileHover={{ scale: 1.1 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                Fresh.
+              </motion.span>
+              <motion.span 
+                className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent"
+                whileHover={{ scale: 1.1 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                Full of Flavor.
+              </motion.span>
+            </motion.div>
+          </motion.div>
+          
+          {/* Decorative Elements */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.8, duration: 0.6 }}
+            className="flex justify-center mt-8"
+          >
+            <div className="flex space-x-2">
+              {[...Array(5)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="w-2 h-2 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full"
+                  animate={{ 
+                    scale: [1, 1.5, 1],
+                    opacity: [0.5, 1, 0.5]
+                  }}
+                  transition={{ 
+                    duration: 2,
+                    repeat: Infinity,
+                    delay: i * 0.2
+                  }}
+                />
+              ))}
+            </div>
+          </motion.div>
         </div>
       </motion.section>
 
