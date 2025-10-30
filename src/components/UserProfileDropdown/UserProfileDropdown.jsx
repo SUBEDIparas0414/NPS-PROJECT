@@ -1,19 +1,23 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiUser, FiMail, FiLogOut, FiCamera, FiX } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { createPortal } from 'react-dom';
 
 const UserProfileDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showPhotoUpload, setShowPhotoUpload] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
-  // Get user data from localStorage
-  const userData = JSON.parse(localStorage.getItem('user') || '{}');
-  const { username, email, profilePhoto } = userData;
+  // Get user data from localStorage and keep in state for live updates
+  const initialUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const [userState, setUserState] = useState(initialUser);
+  const { username, email, profilePhoto } = userState;
 
   const handleLogout = () => {
     localStorage.removeItem('loginData');
@@ -54,13 +58,11 @@ const UserProfileDropdown = () => {
       });
 
       if (response.data.success) {
-        // Update localStorage with new profile photo
-        const updatedUser = { ...userData, profilePhoto: response.data.profilePhoto };
+        // Update localStorage and in-memory state to reflect new photo instantly
+        const updatedUser = { ...userState, profilePhoto: response.data.profilePhoto };
         localStorage.setItem('user', JSON.stringify(updatedUser));
-        
+        setUserState(updatedUser);
         setShowPhotoUpload(false);
-        // Force re-render by updating the component state
-        window.location.reload();
       }
     } catch (error) {
       console.error('Error uploading profile photo:', error);
@@ -164,25 +166,12 @@ const UserProfileDropdown = () => {
               <button
                 onClick={() => {
                   setIsOpen(false);
-                  // Navigate to profile page if you have one
-                  // navigate('/profile');
+                  setShowProfileModal(true);
                 }}
                 className="w-full flex items-center gap-3 px-6 py-3 text-gray-300 hover:text-white hover:bg-white/5 transition-colors"
               >
                 <FiUser className="text-lg" />
                 <span style={{ fontFamily: "'Lato', sans-serif" }}>View Profile</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  setIsOpen(false);
-                  // Navigate to settings page if you have one
-                  // navigate('/settings');
-                }}
-                className="w-full flex items-center gap-3 px-6 py-3 text-gray-300 hover:text-white hover:bg-white/5 transition-colors"
-              >
-                <FiMail className="text-lg" />
-                <span style={{ fontFamily: "'Lato', sans-serif" }}>Account Settings</span>
               </button>
 
               <div className="border-t border-white/10 my-2"></div>
@@ -211,23 +200,87 @@ const UserProfileDropdown = () => {
         )}
       </AnimatePresence>
 
-      {/* Photo Upload Modal */}
-      <AnimatePresence>
-        {showPhotoUpload && (
+      {/* View Profile Modal (Portal to body to ensure true centering) */}
+      {showProfileModal && createPortal(
+        (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[1000] flex items-center justify-center p-4"
+          onClick={() => setShowProfileModal(false)}
+        >
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={() => setShowPhotoUpload(false)}
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+            className="bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 w-full max-w-lg shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
           >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className="bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 max-w-md w-full"
-              onClick={(e) => e.stopPropagation()}
-            >
+              <div className="flex items-start justify-between mb-4">
+                <h3 className="text-white font-semibold text-xl" style={{ fontFamily: "'Lato', sans-serif" }}>
+                  Profile
+                </h3>
+                <button onClick={() => setShowProfileModal(false)} className="text-gray-400 hover:text-white">
+                  <FiX className="text-2xl" />
+                </button>
+              </div>
+              <div className="flex flex-col items-center gap-6">
+                <div className="w-48 h-48 rounded-2xl overflow-hidden bg-gradient-to-br from-[#FF4C29] to-[#FFD369] flex items-center justify-center text-white text-4xl font-bold">
+                  {profilePhoto ? (
+                    <img
+                      src={`http://localhost:4000${profilePhoto}`}
+                      alt="Profile Preview"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                      }}
+                    />
+                  ) : (
+                    <span>{getInitials(username)}</span>
+                  )}
+                </div>
+                <div className="w-full text-center">
+                  <div className="space-y-1">
+                    <div className="text-gray-400 text-sm">Name</div>
+                    <div className="text-white text-xl font-semibold">{username || 'User'}</div>
+                  </div>
+                  <div className="space-y-1 mt-3">
+                    <div className="text-gray-400 text-sm">Email</div>
+                    <div className="text-white text-lg font-semibold break-all">{email || 'user@example.com'}</div>
+                  </div>
+                  <div className="mt-6 flex gap-3 justify-center">
+                    <button
+                      onClick={() => setShowProfileModal(false)}
+                      className="px-4 py-2 rounded-xl border border-white/10 text-gray-300 hover:text-white hover:bg-white/5"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+          </motion.div>
+        </motion.div>
+        ), document.body)
+      }
+
+      {/* Photo Upload Modal (Portal) */}
+      {showPhotoUpload && createPortal(
+        (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[1000] flex items-center justify-center p-4"
+          onClick={() => setShowPhotoUpload(false)}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            className="bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
               <div className="text-center">
                 <h3 className="text-white font-semibold text-lg mb-4" style={{ fontFamily: "'Lato', sans-serif" }}>
                   Upload Profile Photo
@@ -262,10 +315,10 @@ const UserProfileDropdown = () => {
                   </div>
                 )}
               </div>
-            </motion.div>
           </motion.div>
-        )}
-      </AnimatePresence>
+        </motion.div>
+        ), document.body)
+      }
     </div>
   );
 };

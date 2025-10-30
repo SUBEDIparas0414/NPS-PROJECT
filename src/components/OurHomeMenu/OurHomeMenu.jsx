@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
 
-const categories = ["Breakfast", "Lunch", "Dinner", "Mexican", "Italian", "Drinks"];
+const categories = ["Breakfast", "Lunch", "Dinner", "Mexican", "Italian", "Desserts", "Drinks"];
 
 const OurHomeMenu = () => {
   const [activeCategory, setActiveCategory] = useState(categories[0]);

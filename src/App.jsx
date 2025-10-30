@@ -13,10 +13,13 @@ import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
 import VerifyPaymentPage from "./pages/VerifyPaymentPage/VerifyPaymentPage";
 import CheckoutPage from "./pages/CheckoutPage/CheckoutPage";
 import MyOrderPage from "./pages/MyOrderPage/MyOrderPage";
+import ScrollToTop from "./components/ScrollToTop/ScrollToTop";
 
 
 const App = () => {
   return (
+    <>
+    <ScrollToTop />
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/contact" element={<ContactPage />} />
@@ -44,6 +47,7 @@ const App = () => {
       <Route path="/checkout" element={<PrivateRoute><CheckoutPage /></PrivateRoute>} />
       <Route path="/myorder" element={<PrivateRoute><MyOrderPage/></PrivateRoute>} />
     </Routes>
+    </>
   );
 };
 

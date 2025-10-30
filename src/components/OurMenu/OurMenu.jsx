@@ -4,7 +4,7 @@ import { FaMinus, FaPlus, FaHeart, FaStar } from "react-icons/fa";
 import axios from "axios";
 import { motion } from "framer-motion";
 
-const categories = ["Breakfast", "Lunch", "Dinner", "Mexican", "Italian", "Drinks"];
+const categories = ["Breakfast", "Lunch", "Dinner", "Mexican", "Italian", "Desserts", "Drinks"];
 
 const OurMenu = ({ searchQuery = '' }) => {
   const [activeCategory, setActiveCategory] = useState(categories[0]);

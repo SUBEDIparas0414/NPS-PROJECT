@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   FiArrowLeft,
   FiBox,
@@ -11,12 +11,14 @@ import {
   FiX,
 } from "react-icons/fi";
 import { Link } from "react-router-dom";
+import { useNotifications } from "../../NotificationContext/NotificationContext";
 
 const MyOrder = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [imageErrors, setImageErrors] = useState(new Set());
+  const { notifications, fetchNotifications } = useNotifications();
 
   const user = JSON.parse(localStorage.getItem("user"));
   const API_BASE = "http://localhost:4000";
@@ -83,8 +85,7 @@ const MyOrder = () => {
   };
 
   // fetch orders for a user
-  useEffect(() => {
-    const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
       try {
         const token = localStorage.getItem("authToken");
         if (!token) {
@@ -157,9 +158,25 @@ const MyOrder = () => {
       } finally {
         setLoading(false);
       }
-    };
-    fetchOrders();
   }, []);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
+  // Auto-refresh orders when a new status notification is fetched
+  useEffect(() => {
+    const hasOrderUpdate = notifications?.some(n => (n.type === 'status_update' || n.type === 'order_status') && n.orderId);
+    if (hasOrderUpdate) {
+      fetchOrders();
+    }
+  }, [notifications, fetchOrders]);
+
+  // Ensure notifications are kept fresh while on this page (every 2s)
+  useEffect(() => {
+    const id = setInterval(() => fetchNotifications?.(), 2000);
+    return () => clearInterval(id);
+  }, [fetchNotifications]);
 
   const statusStyles = {
     pending: {

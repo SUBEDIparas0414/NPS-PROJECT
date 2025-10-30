@@ -114,11 +114,11 @@ export const NotificationProvider = ({ children }) => {
     }
   };
 
-  // Fetch notifications on mount and every 30 seconds
+  // Fetch notifications on mount and every 2 seconds for near real-time
   useEffect(() => {
     console.log('NotificationContext: useEffect triggered');
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 30000); // 30 seconds
+    const interval = setInterval(fetchNotifications, 2000); // 2 seconds
     return () => clearInterval(interval);
   }, []);
 
