@@ -190,9 +190,9 @@ export const dummyMenuData = {
       description: 'Grilled fish tacos with cabbage slaw and lime crema.',
     },
   ],
-  Dinner: [
+  Salad: [
     {
-      id: 'dinner-1',
+      id: 'salad-1',
       name: 'Grilled Ribeye Steak',
       price: '249',
       rating: 4.7,
@@ -200,7 +200,7 @@ export const dummyMenuData = {
       description: 'Juicy ribeye steak grilled to perfection.',
     },
     {
-      id: 'dinner-2',
+      id: 'salad-2',
       name: 'Salmon Fillet',
       price: '220',
       rating: 4.5,
@@ -208,7 +208,7 @@ export const dummyMenuData = {
       description: 'Fresh salmon fillet with a lemon butter sauce.',
     },
     {
-      id: 'dinner-3',
+      id: 'salad-3',
       name: 'Roast Chicken',
       price: '199',
       rating: 4.4,
@@ -216,7 +216,7 @@ export const dummyMenuData = {
       description: 'Herb-roasted chicken served with seasonal vegetables.',
     },
     {
-      id: 'dinner-4',
+      id: 'salad-4',
       name: 'Pasta Primavera',
       price: '199',
       rating: 4.3,
@@ -224,7 +224,7 @@ export const dummyMenuData = {
       description: 'Pasta with fresh seasonal vegetables in a light sauce.',
     },
     {
-      id: 'dinner-5',
+      id: 'salad-5',
       name: 'Beef Bourguignon',
       price: '250',
       rating: 4.6,
@@ -232,7 +232,7 @@ export const dummyMenuData = {
       description: 'Classic French beef stew with red wine and mushrooms.',
     },
     {
-      id: 'dinner-6',
+      id: 'salad-6',
       name: 'Vegetable Stir Fry',
       price: '150',
       rating: 4.2,
@@ -240,7 +240,7 @@ export const dummyMenuData = {
       description: 'Crispy vegetables stir-fried in a tangy sauce.',
     },
     {
-      id: 'dinner-7',
+      id: 'salad-7',
       name: 'Shrimp Scampi',
       price: '199',
       rating: 4.5,
@@ -248,7 +248,7 @@ export const dummyMenuData = {
       description: 'Shrimp cooked in garlic butter sauce over linguine.',
     },
     {
-      id: 'dinner-8',
+      id: 'salad-8',
       name: 'Lamb Chops',
       price: '28.50',
       rating: 4.8,
@@ -256,9 +256,9 @@ export const dummyMenuData = {
       description: 'Grilled lamb chops with rosemary and garlic.',
     },
   ],
-  Mexican: [
+  Snacks: [
     {
-      id: 'mexican-1',
+      id: 'snacks-1',
       name: 'Tacos al Pastor',
       price: '11.99',
       rating: 4.6,
@@ -266,7 +266,7 @@ export const dummyMenuData = {
       description: 'Tacos with marinated pork, pineapple, and cilantro.',
     },
     {
-      id: 'mexican-2',
+      id: 'snacks-2',
       name: 'Chicken Quesadilla',
       price: '100',
       rating: 4.4,
@@ -274,7 +274,7 @@ export const dummyMenuData = {
       description: 'Grilled quesadilla filled with chicken, cheese, and salsa.',
     },
     {
-      id: 'mexican-3',
+      id: 'snacks-3',
       name: 'Enchiladas',
       price: '199',
       rating: 4.5,
@@ -282,7 +282,7 @@ export const dummyMenuData = {
       description: 'Corn tortillas rolled around a filling and smothered in spicy sauce.',
     },
     {
-      id: 'mexican-4',
+      id: 'snacks-4',
       name: 'Fajitas',
       price: '13.50',
       rating: 4.7,
@@ -290,7 +290,7 @@ export const dummyMenuData = {
       description: 'Sizzling steak or chicken served with peppers and onions.',
     },
     {
-      id: 'mexican-5',
+      id: 'snacks-5',
       name: 'Nachos',
       price: '99',
       rating: 4.3,
@@ -298,7 +298,7 @@ export const dummyMenuData = {
       description: 'Crispy tortilla chips loaded with cheese and toppings.',
     },
     {
-      id: 'mexican-6',
+      id: 'snacks-6',
       name: 'Burrito',
       price: '150',
       rating: 4.2,
@@ -306,7 +306,7 @@ export const dummyMenuData = {
       description: 'A large flour tortilla filled with beans, rice, and meat.',
     },
     {
-      id: 'mexican-7',
+      id: 'snacks-7',
       name: 'Tamales',
       price: '89',
       rating: 4.4,
@@ -314,7 +314,7 @@ export const dummyMenuData = {
       description: 'Steamed masa filled with meats or vegetables.',
     },
     {
-      id: 'mexican-8',
+      id: 'snacks-8',
       name: 'Chilaquiles',
       price: '199',
       rating: 4.5,
@@ -322,9 +322,9 @@ export const dummyMenuData = {
       description: 'Tortilla chips simmered in a red or green salsa.',
     },
   ],
-  Italian: [
+  Soups: [
     {
-      id: 'italian-1',
+      id: 'soups-1',
       name: 'Spaghetti Carbonara',
       price: '199',
       rating: 4.7,
@@ -332,7 +332,7 @@ export const dummyMenuData = {
       description: 'Classic pasta with eggs, cheese, pancetta, and pepper.',
     },
     {
-      id: 'italian-2',
+      id: 'soups-2',
       name: 'Lasagna',
       price: '150',
       rating: 4.6,
@@ -340,7 +340,7 @@ export const dummyMenuData = {
       description: 'Layers of pasta with meat sauce, cheese, and béchamel.',
     },
     {
-      id: 'italian-3',
+      id: 'soups-3',
       name: 'Risotto',
       price: '699',
       rating: 4.5,
@@ -348,7 +348,7 @@ export const dummyMenuData = {
       description: 'Creamy Arborio rice cooked with broth and parmesan.',
     },
     {
-      id: 'italian-4',
+      id: 'soups-4',
       name: 'Margherita Pizza',
       price: '150',
       rating: 4.8,
@@ -356,7 +356,7 @@ export const dummyMenuData = {
       description: 'Pizza topped with tomato sauce, mozzarella, and basil.',
     },
     {
-      id: 'italian-5',
+      id: 'soups-5',
       name: 'Fettuccine Alfredo',
       price: '140',
       rating: 4.4,
@@ -364,7 +364,7 @@ export const dummyMenuData = {
       description: 'Pasta in a rich and creamy Alfredo sauce.',
     },
     {
-      id: 'italian-6',
+      id: 'soups-6',
       name: 'Pesto Pasta',
       price: '599',
       rating: 4.3,
@@ -372,7 +372,7 @@ export const dummyMenuData = {
       description: 'Pasta tossed in a vibrant basil pesto sauce.',
     },
     {
-      id: 'italian-7',
+      id: 'soups-7',
       name: 'Gnocchi',
       price: '999',
       rating: 4.2,
@@ -380,7 +380,7 @@ export const dummyMenuData = {
       description: 'Soft potato dumplings served with a marinara sauce.',
     },
     {
-      id: 'italian-8',
+      id: 'soups-8',
       name: 'Osso Buco',
       price: '18.50',
       rating: 4.7,
