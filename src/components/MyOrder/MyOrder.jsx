@@ -12,6 +12,7 @@ import {
 } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useNotifications } from "../../NotificationContext/NotificationContext";
+import ConfirmationDialog from "../ConfirmationDialog/ConfirmationDialog";
 
 const MyOrder = () => {
   const [orders, setOrders] = useState([]);
@@ -19,6 +20,10 @@ const MyOrder = () => {
   const [error, setError] = useState(null);
   const [imageErrors, setImageErrors] = useState(new Set());
   const { notifications, fetchNotifications } = useNotifications();
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [confirmAction, setConfirmAction] = useState(null);
+  const [confirmOrderId, setConfirmOrderId] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const user = JSON.parse(localStorage.getItem("user"));
   const API_BASE = "http://localhost:4000";
@@ -54,11 +59,25 @@ const MyOrder = () => {
     return imageUrl;
   };
 
-  // Handle order deletion by customer
-  const handleDeleteOrder = async (orderId) => {
-    if (!window.confirm('Are you sure you want to delete this order from your order history? This will not affect the admin panel.')) {
-      return;
-    }
+  // Handle marking order as delivered - show confirmation dialog
+  const handleMarkAsDelivered = (orderId) => {
+    setConfirmOrderId(orderId);
+    setConfirmAction('delivered');
+    setShowConfirmDialog(true);
+  };
+
+  // Handle order deletion - show confirmation dialog
+  const handleDeleteOrder = (orderId) => {
+    setConfirmOrderId(orderId);
+    setConfirmAction('delete');
+    setShowConfirmDialog(true);
+  };
+
+  // Confirm action handler
+  const handleConfirmAction = async () => {
+    if (!confirmOrderId) return;
+
+    setIsProcessing(true);
 
     try {
       const token = localStorage.getItem("authToken");
@@ -66,23 +85,81 @@ const MyOrder = () => {
         throw new Error('No authentication token found');
       }
 
-      const response = await axios.delete(`http://localhost:4000/api/orders/${orderId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      if (confirmAction === 'delivered') {
+        const response = await axios.put(`http://localhost:4000/api/orders/${confirmOrderId}/delivered`, {}, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
 
-      if (response.data.success) {
-        // Remove order from local state
-        setOrders(prevOrders => prevOrders.filter(order => order._id !== orderId));
-        
-        alert('✅ Order deleted successfully from your order history!\n\nThe admin panel remains unchanged.');
-      } else {
-        throw new Error(response.data.message || 'Failed to delete order');
+        if (response.data.success) {
+          // Update order in local state
+          setOrders(prevOrders => 
+            prevOrders.map(order => 
+              order._id === confirmOrderId 
+                ? { 
+                    ...order, 
+                    status: 'delivered',
+                    deliveredAt: response.data.order?.deliveredAt ? new Date(response.data.order.deliveredAt).toLocaleDateString("en-IN", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }) : new Date().toLocaleDateString("en-IN", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }),
+                  } 
+                : order
+            )
+          );
+          
+          // Refresh orders to get latest data
+          fetchOrders();
+          
+          // Close dialog
+          setShowConfirmDialog(false);
+          setConfirmOrderId(null);
+          setConfirmAction(null);
+        } else {
+          throw new Error(response.data.message || 'Failed to mark order as delivered');
+        }
+      } else if (confirmAction === 'delete') {
+        const response = await axios.delete(`http://localhost:4000/api/orders/${confirmOrderId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (response.data.success) {
+          // Remove order from local state
+          setOrders(prevOrders => prevOrders.filter(order => order._id !== confirmOrderId));
+          
+          // Close dialog
+          setShowConfirmDialog(false);
+          setConfirmOrderId(null);
+          setConfirmAction(null);
+        } else {
+          throw new Error(response.data.message || 'Failed to delete order');
+        }
       }
     } catch (err) {
-      console.error('Error deleting order:', err);
-      alert(`❌ Failed to delete order!\n\nError: ${err.response?.data?.message || err.message}\n\nPlease try again.`);
+      console.error(`Error ${confirmAction === 'delivered' ? 'marking order as delivered' : 'deleting order'}:`, err);
+      alert(`❌ Failed to ${confirmAction === 'delivered' ? 'mark order as delivered' : 'delete order'}!\n\nError: ${err.response?.data?.message || err.message}\n\nPlease try again.`);
+    } finally {
+      setIsProcessing(false);
     }
   };
+
+  // Close confirmation dialog
+  const handleCloseDialog = () => {
+    if (!isProcessing) {
+      setShowConfirmDialog(false);
+      setConfirmOrderId(null);
+      setConfirmAction(null);
+    }
+  };
+
 
   // fetch orders for a user
   const fetchOrders = useCallback(async () => {
@@ -128,11 +205,24 @@ const MyOrder = () => {
           }),
           paymentStatus: order.paymentStatus?.toLowerCase() || "pending",
           status: order.status || 'pending',
-          expectedDelivery: order.expectedDelivery ? new Date(order.expectedDelivery).toLocaleDateString("en-IN", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          }) : null,
+          expectedDelivery: order.expectedDelivery ? (() => {
+            const expectedDate = new Date(order.expectedDelivery);
+            const now = new Date();
+            const diffMinutes = Math.floor((expectedDate - now) / (1000 * 60));
+            
+            // If order is "On the Way" and expected delivery is within 30 minutes, show "within half an hour"
+            if (order.status === 'outForDelivery' && diffMinutes <= 30 && diffMinutes > 0) {
+              return `within ${diffMinutes} minute${diffMinutes !== 1 ? 's' : ''}`;
+            } else if (order.status === 'outForDelivery' && diffMinutes <= 30) {
+              return 'within half an hour';
+            }
+            // For other statuses or if time has passed, show the date
+            return expectedDate.toLocaleDateString("en-IN", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            });
+          })() : null,
           deliveredAt: order.deliveredAt ? new Date(order.deliveredAt).toLocaleDateString("en-IN", {
             year: "numeric",
             month: "long",
@@ -201,7 +291,7 @@ const MyOrder = () => {
       color: "text-purple-400",
       bg: "bg-purple-900/20",
       icon: <FiTruck className="text-lg" />,
-      label: "Out for Delivery",
+      label: "On the Way",
     },
     delivered: {
       color: "text-green-400",
@@ -412,7 +502,7 @@ const MyOrder = () => {
                             {status.icon}
                             {status.label}
                           </span>
-                          {order.expectedDelivery && (
+                          {order.expectedDelivery && order.status === 'outForDelivery' && (
                             <div className="text-xs text-blue-400 bg-blue-900/20 px-2 py-1 rounded">
                               Expected: {order.expectedDelivery}
                             </div>
@@ -425,7 +515,17 @@ const MyOrder = () => {
                         </div>
                       </td>
                       <td className="p-4">
-                        <div className="flex gap-2">
+                        <div className="flex flex-col gap-2">
+                          {order.status === 'outForDelivery' && (
+                            <button
+                              onClick={() => handleMarkAsDelivered(order._id)}
+                              className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-green-900/30 hover:bg-green-900/50 text-green-400 hover:text-green-300 border border-green-500/50 rounded-lg transition-all text-sm font-medium"
+                              title="Mark as Delivered"
+                            >
+                              <FiCheckCircle className="text-base" />
+                              <span>Confirm Delivery</span>
+                            </button>
+                          )}
                           {(order.status === 'delivered' || order.status === 'cancelled') && (
                             <button
                               onClick={() => handleDeleteOrder(order._id)}
@@ -445,6 +545,23 @@ const MyOrder = () => {
           </div>
         )}
       </div>
+
+      {/* Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={showConfirmDialog}
+        onClose={handleCloseDialog}
+        onConfirm={handleConfirmAction}
+        title={confirmAction === 'delivered' ? 'Confirm Delivery' : 'Delete Order'}
+        message={
+          confirmAction === 'delivered'
+            ? 'Have you received your order? Please confirm delivery once you have received your order.'
+            : 'Are you sure you want to delete this order from your order history? This will not affect the admin panel.'
+        }
+        confirmText={confirmAction === 'delivered' ? 'Confirm Delivery' : 'Delete Order'}
+        cancelText="Cancel"
+        type={confirmAction === 'delivered' ? 'success' : 'danger'}
+        isLoading={isProcessing}
+      />
     </div>
   );
 };
